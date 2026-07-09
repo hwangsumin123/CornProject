@@ -16,7 +16,94 @@
 </div>
 
 //메인 화면
-<div else>
+<div v-else>
+
+<div class="main-container">
+      
+      <div class="sidebar">//왼쪽 사이드
+        <h2>메뉴</h2>
+        <button>일정 조율</button>
+        <button>투표</button>
+        <button>DM</button>
+      </div>
+
+      <div class="right-area">//오른쪽 위 팀이아디,알림
+        
+        <div class="header">
+          <span class="team-id-display">팀 ID : {{ currentTeam }}</span>
+          
+          <div class="notification-wrapper">
+            <button @click="showNotification = !showNotification">🔔</button>
+            //알림버튼 눌르면 알림들 모여있는 창 띄울때 변수 showNotification
+          </div>
+        </div>
+
+        <div class="center">
+          <h2>공유 달력</h2>
+          <p>여기에 달력 </p>
+        </div>
+
+      </div>
+    </div>
+
+<style scoped>//메인화면 css
+.main-container {
+  display: flex;
+  height: 100vh; 
+}
+
+.sidebar {
+  width: 200px;
+  background-color: #f4f4f4;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  border-right: 1px solid #ddd;
+}
+
+.sidebar button {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.right-area {
+  flex-grow: 1; 
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 15px 30px;
+  background-color: #e9ecef;
+  gap: 20px;
+  border-bottom: 1px solid #ddd;
+}
+
+.notification-wrapper {//알림창기준점
+  position: relative;
+}
+
+.notification-box {//알림창 박스
+  position: absolute;
+  top: 40px;
+  right: 0;
+  width: 250px;
+  background-color: white;
+  border: 1px solid #ccc;
+  padding: 15px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.center {
+  padding: 40px;
+  text-align: center;
+  flex-grow: 1;
+}
+</style>
 </div>
 
 
@@ -37,7 +124,9 @@ export default {
             //입력 값
             createTeamName: "",
             joinTeamId: "",
-            nicknameInput: ""
+            nicknameInput: "",
+
+            showNotification: false//알림창
         }
     },
     methods: {
