@@ -2,7 +2,7 @@
 
   <!-- 로그인 화면 -->
   <Login 
-    v-if="view === Login"
+    v-if="view === 'login'"
     @create-team="createTeam"
     @join-team="joinTeam"
   />
@@ -65,6 +65,9 @@ methods:{
             vote:[],
             messages:[]
         };
+
+        this.currentTeam=id;
+        this.view="main";
 
         alert(
             "팀 생성 완료\n팀 ID : "+id

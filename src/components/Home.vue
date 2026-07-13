@@ -24,7 +24,8 @@
         <div class="center">
 
           <h2>공유 달력</h2>
-          <p>여기에 달력 </p>
+          
+          <Schedule />
 
         </div>
 
@@ -37,11 +38,13 @@
 <script>
 
 import Sidebar from "./Sidebar.vue"
+import Schedule from "./Schedule.vue"
 
 export default {
 
 components:{
-    Sidebar
+    Sidebar,
+    Schedule
 },
     
 props:[
