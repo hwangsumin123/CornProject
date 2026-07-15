@@ -15,7 +15,7 @@
            <div class="notification-wrapper">
 
             <!-- 알림버튼 누르면 알림들 모여있는 창 띄울때 변수 showNotification -->
-            <button @click="showNotification = !showNotification">🔔</button>
+            <button class="bell-btn" @click="showNotification = !showNotification">🔔</button>
           
             </div>
 
@@ -75,7 +75,7 @@ data(){
 
 .sidebar {
   width: 200px;
-  background-color: #f4f4f4;
+  background-color: #fffbe6;
   padding: 20px;
   display: flex;
   flex-direction: column;
@@ -99,9 +99,19 @@ data(){
   justify-content: flex-end;
   align-items: center;
   padding: 15px 30px;
-  background-color: #e9ecef;
+  background-color: #a1d69f;
   gap: 20px;
   border-bottom: 1px solid #ddd;
+}
+
+/*알림버튼 - 버튼 테두리/배경 없애고 종 아이콘만 보이게*/
+.bell-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
 }
 
 /*알림창 기준점*/
