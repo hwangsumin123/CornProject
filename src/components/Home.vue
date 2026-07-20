@@ -1,9 +1,10 @@
+
 <template>
 
 <div class="main-container">
 
     <!-- 왼쪽 사이드 -->
-    <Sidebar />
+    <Sidebar @menu-select="handleMenuSelect" />
 
       <div class="right-area"> 
         
@@ -38,15 +39,18 @@
 
         </div>
 
-        <div class="center">
+<div class="center">
 
-          <h2>공유 달력</h2>
-          
-          <Schedule
-          @add-schedule="addSchedule"
-          />
+  <div v-if="selectedMenu === 'schedule'">
+    <h2>공유 달력</h2>
+    <Schedule @add-schedule="addSchedule" />
+  </div>
 
-        </div>
+  <div v-else-if="selectedMenu === 'vote'">
+    <Vote />
+  </div>
+
+</div>
 
       </div>
 
@@ -58,12 +62,14 @@
 
 import Sidebar from "./Sidebar.vue"
 import Schedule from "./Schedule.vue"
+import Vote from "./Vote.vue"  
 
 export default {
 
 components:{
     Sidebar,
-    Schedule
+    Schedule,
+    Vote
 },
     
 props:[
@@ -77,13 +83,16 @@ data(){
         // 알림창 표시 여부
         showNotification:false,
         newNotification:"",
-        showHistory:false
+        showHistory:false,
+        selectedMenu:"schedule"
     }
 
 },
 
 methods:{
-
+ handleMenuSelect(id){       
+    this.selectedMenu = id;
+  },
   addSchedule(schedule){
     this.$emit("add-schedule", schedule);
 

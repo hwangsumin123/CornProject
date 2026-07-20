@@ -46,6 +46,7 @@ methods:{
     selectMenu(id){
 
         this.selectedMenu = id;
+        this.$emit("menu-select", id);   
 
     }
 
