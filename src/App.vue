@@ -10,6 +10,8 @@
   <Home 
     v-else
     :currentTeam="currentTeam"
+    :notifications="teams[currentTeam].notifications"
+    @add-schedule="addSchedule"
   />
 
 </template>
@@ -30,19 +32,12 @@ data(){
 
     return {
 
-        // 팀 데이터 저장소
         teams:{},
 
-
-        // 현재 접속 팀
         currentTeam:null,
 
-
-        // 사용자 닉네임
         nickname:"",
 
-
-        // 화면 상태
         view:"login"
 
     }
@@ -62,8 +57,9 @@ methods:{
             name:teamName,
             members:[],
             schedule:[],
+            notifications:[],
             vote:[],
-            messages:[]
+            messages:[],
         };
 
         this.currentTeam=id;
@@ -93,6 +89,19 @@ methods:{
 
         this.view="main";
 
+    },
+
+    // Schedule.vue에서 일정 받아서 현재 팀에 저장
+    addSchedule(schedule){
+        // 1. 일정 저장 
+        this.teams[this.currentTeam].schedule.push(schedule);
+
+        // 2. 알림 생성
+        this.teams[this.currentTeam].notifications.push({
+            message: `${schedule.title} 일정이 등록되었습니다.`,
+            data: schedule.data,
+            time: schedule.time
+        });
     }
 
 }

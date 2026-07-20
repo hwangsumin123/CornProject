@@ -15,7 +15,24 @@
            <div class="notification-wrapper">
 
             <!-- 알림버튼 누르면 알림들 모여있는 창 띄울때 변수 showNotification -->
-            <button class="bell-btn" @click="showNotification = !showNotification">🔔</button>
+            <button class="bell-btn" @click="showHistory = !showHistory">🔔</button>
+
+            <div v-if="showHistory || showNotification" class="notification-box">
+              <p v-if="showNotification">
+                🔔 {{newNotification}}
+              </p>
+              
+              <p v-if="showHistory">
+                <p v-if="notifications.length === 0">
+                  알림이 없습니다.
+                </p>
+
+                <p v-for="notice in notifications"
+                 :key="notice.time">
+                  🔔 {{notice.message}}
+                </p>
+              </p>
+            </div>
           
             </div>
 
@@ -25,7 +42,9 @@
 
           <h2>공유 달력</h2>
           
-          <Schedule />
+          <Schedule
+          @add-schedule="addSchedule"
+          />
 
         </div>
 
@@ -48,17 +67,35 @@ components:{
 },
     
 props:[
-    "currentTeam"
+    "currentTeam",
+    "notifications"
 ],
 
 data(){
 
     return{
-
         // 알림창 표시 여부
-        showNotification:false
-
+        showNotification:false,
+        newNotification:"",
+        showHistory:false
     }
+
+},
+
+methods:{
+
+  addSchedule(schedule){
+    this.$emit("add-schedule", schedule);
+
+    this.newNotification = `${schedule.title} 일정이 등록되었습니다.`;
+
+    this.showNotification = true;
+
+    setTimeout(()=>{
+      this.showNotification = false;
+      this.newNotification = "";
+    }, 3000);
+  }  
 
 }
 
@@ -135,6 +172,24 @@ data(){
   padding: 40px;
   text-align: center;
   flex-grow: 1;
+}
+
+.notification-box{
+    position:absolute;
+    top:45px;
+    right:0;
+    width:250px;
+    background:white;
+    border-radius:15px;
+    padding:15px;
+    box-shadow:
+    0 5px 15px rgba(0,0,0,0.15);
+}
+
+
+.notification-box p{
+    margin:10px 0;
+    color:#5a4800;
 }
 
 </style>
