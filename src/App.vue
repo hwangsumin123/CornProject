@@ -11,7 +11,10 @@
     v-else
     :currentTeam="currentTeam"
     :notifications="teams[currentTeam].notifications"
+    :memebers="teams[currentTeam].members"
+    :messages="teams[currentTeam].messages"
     @add-schedule="addSchedule"
+    @send-message="sendMessage"
   />
 
 </template>
@@ -29,19 +32,12 @@ components:{
 },
 
 data(){
-
     return {
-
         teams:{},
-
         currentTeam:null,
-
         nickname:"",
-
         view:"login"
-
     }
-
 },
 
 methods:{
@@ -59,7 +55,7 @@ methods:{
             schedule:[],
             notifications:[],
             vote:[],
-            messages:[],
+            messages:{},
         };
 
         this.currentTeam=id;
@@ -101,6 +97,19 @@ methods:{
             message: `${schedule.title} 일정이 등록되었습니다.`,
             data: schedule.data,
             time: schedule.time
+        });
+    },
+
+    sendMessage(data){
+        const team=this.teams[this.currentTeam];
+
+        if(!team.messages[data.receiver]){
+            team.messages[data.receiver]=[];
+        }
+
+        team.messages[data.receiver].push({
+            id:Date.now(),
+            text:data.text
         });
     }
 

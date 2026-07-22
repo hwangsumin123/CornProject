@@ -1,4 +1,3 @@
-
 <template>
 
 <div class="main-container">
@@ -50,6 +49,13 @@
     <Vote />
   </div>
 
+  <div v-else-if="selectedMenu === 'dm'">
+    <DM
+    :members="members"
+    :messages="message"
+    @send-message="sendMessage" />
+  </div>
+
 </div>
 
       </div>
@@ -63,18 +69,22 @@
 import Sidebar from "./Sidebar.vue"
 import Schedule from "./Schedule.vue"
 import Vote from "./Vote.vue"  
+import DM from "./DM.vue"
 
 export default {
 
 components:{
     Sidebar,
     Schedule,
-    Vote
+    Vote,
+    DM
 },
     
 props:[
     "currentTeam",
-    "notifications"
+    "notifications",
+    "members",
+    "messages"
 ],
 
 data(){
@@ -104,8 +114,14 @@ methods:{
       this.showNotification = false;
       this.newNotification = "";
     }, 3000);
+  },
+  sendMessage(data){
+    this.$emit(
+      "send-message",
+      data
+    );
   }  
-
+  
 }
 
 }
