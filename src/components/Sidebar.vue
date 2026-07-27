@@ -2,6 +2,8 @@
 
 <div class="sidebar">
 
+    <button class="home-btn" @click="selectMenu(null)">🏠 </button>
+
     <h2>MENU</h2>
 
     <button
@@ -28,8 +30,8 @@ data(){
 
         // 사이드바 메뉴 목록
         menuItems:[
-            { id:"schedule", label:"일정 조율" },
-            { id:"vote", label:"투표" },
+            { id:"schedule", label:"일정 등록" },
+            { id:"vote", label:"일정 투표" },
             { id:"dm", label:"DM" }
         ],
 
@@ -70,6 +72,12 @@ methods:{
     gap:15px;
 
     border-right:3px solid #ffd93d;
+
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    overflow-y: auto;
 
 }
 
@@ -125,6 +133,25 @@ methods:{
     box-shadow:0 4px 10px rgba(76,175,80,0.4);
 
 }
+/*홈버튼스타일*/
+.sidebar .home-btn {
 
+    border:none;
+    background:none;
+    cursor:pointer;
 
+    font-size:26px;
+    line-height:1;
+
+    align-self:center;
+    margin-bottom:10px;
+
+    transform:scale(1);
+    transition:transform 0.2s ease;
+
+}
+
+.sidebar .home-btn:hover {
+    transform:scale(1.3);
+}
 </style>
