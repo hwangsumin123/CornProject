@@ -90,6 +90,20 @@ export default {
             this.selectedMember=member;
         }
     },
+    watch:{
+        currentMessages:{
+            handler(){
+
+                this.$nextTick(()=>{
+                    if(this.$refs.messagesBox){
+                        this.$refs.messagesBox.scrollTop =
+                        this.$refs.messagesBox.scrollHeight;
+                    }
+                });
+            },
+            deep:true
+        }
+    },
 
     computed:{
         currentMessages(){
@@ -97,7 +111,7 @@ export default {
                 return [];
             }
 
-            return this.messages[this.selectedMember] || [];
+            return this.messages?.[this.selectedMember] || [];
         }
     }
 }

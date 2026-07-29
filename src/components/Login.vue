@@ -33,6 +33,11 @@
             placeholder="팀 이름"
             />
 
+            <input
+            v-model="nicknameInput"
+            placeholder="생성자 닉네임"
+            />
+
             <button @click="createTeam">
                 팀 생성
             </button>
@@ -102,9 +107,15 @@ methods:{
             return;
         }
 
+        if(!this.nicknameInput){
+            alert("닉네임을 입력해주세요.");
+            return;
+        }
+
         this.$emit(
             "create-team",
-            this.createTeamName
+            {teamName: this.createTeamName,
+            nickname: this.nicknameInput}
         );
 
         this.createTeamName="";

@@ -23,11 +23,11 @@
               </p>
               
               <p v-if="showHistory">
-                <p v-if="notifications.length === 0">
+                <p v-if="!teams[currentTeam]?.notifications?.length">
                   알림이 없습니다.
                 </p>
 
-                <p v-for="notice in notifications"
+                <p v-for="notice in teams[currentTeam]?.notifications || []"
                  :key="notice.time">
                   🔔 {{notice.message}}
                 </p>
@@ -42,17 +42,21 @@
 
   <div v-if="selectedMenu === 'schedule'">
     <h2>공유 달력</h2>
-    <Schedule @add-schedule="addSchedule" />
+    <Schedule
+    :schedules="teams[currentTeam]?.schedule || []"
+    @add-schedule="addSchedule"
+    @delete-schedule="deleteSchedule"
+/>
   </div>
 
   <div v-else-if="selectedMenu === 'vote'">
-    <Vote />
+    <Vote :currentTeam="currentTeam" />
   </div>
 
   <div v-else-if="selectedMenu === 'dm'">
     <DM
     :members="members"
-    :messages="message"
+    :messages="teams[currentTeam]?.messages || {}"
     @send-message="sendMessage" />
   </div>
 
@@ -70,6 +74,8 @@ import Sidebar from "./Sidebar.vue"
 import Schedule from "./Schedule.vue"
 import Vote from "./Vote.vue"  
 import DM from "./DM.vue"
+import { db } from "../firebase";
+import { doc, updateDoc } from "firebase/firestore";
 
 export default {
 
@@ -82,9 +88,9 @@ components:{
     
 props:[
     "currentTeam",
-    "notifications",
     "members",
-    "messages"
+    "messages",
+    "teams"
 ],
 
 data(){
@@ -119,6 +125,11 @@ methods:{
     this.$emit(
       "send-message",
       data
+    );
+  },
+  deleteSchedule(id){
+    this.$emit(
+      "delete-schedule", id
     );
   }  
   

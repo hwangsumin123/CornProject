@@ -101,7 +101,7 @@ methods:{
         }
 
         const schedule = {
-
+            id:Date.now(),
             title:this.title,
             date:this.date,
             time:this.time,

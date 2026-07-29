@@ -68,27 +68,18 @@ emits:[
     "add-schedule"
 ],
 
-data(){
-    return{
-        schedules:[]
-    }
-},
+props:[
+    "schedules"
+],
 
 methods:{
 
 addSchedule(schedule){
-
-    this.schedules.push({
-        id: Date.now(),
-        title:schedule.title,
-        date:schedule.date,
-        time:schedule.time,
-        place:schedule.place
-
-    });
-
     this.$emit(
-        "add-schedule", schedule
+        "add-schedule", {
+            id: Date.now(),
+            ...schedule
+        }
     );
 
 },
@@ -102,9 +93,8 @@ deleteSchedule(id){
         return;
     }
 
-    this.schedules = 
-    this.schedules.filter(
-        schedule => schedule.id !==id
+    this.$emit(
+        "delete-schedule", id
     );
 }    
 

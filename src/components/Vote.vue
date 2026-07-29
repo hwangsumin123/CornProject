@@ -5,7 +5,10 @@
   <div v-for="(vote, vIndex) in votes" :key="vIndex" class="vote-block">
 
     <!-- 이 투표 덩어리의 제목 (예: 1차 회의) -->
-    <input v-model="vote.title" placeholder="일정 제목" class="vote-title-input" />
+    <input v-model="vote.title" 
+    @change="saveVotes"
+    placeholder="일정 제목" 
+    class="vote-title-input" />
 
     <!-- 투표 진행중일 때: 장소/날짜/시간 후보 다 보여줌 -->
     <div v-if="!vote.ended">
@@ -44,7 +47,7 @@
       </div>
 
       <!-- 장소/날짜/시간 다 합쳐서 투표종료 버튼 하나만 -->
-      <button @click="vote.ended = true" class="end-btn">🛑 투표종료</button>
+      <button @click="endVote(vote) = true" class="end-btn">🛑 투표종료</button>
 
       <!-- 이 투표 덩어리 자체를 통째로 삭제 -->
       <button @click="deleteVote(vIndex)" class="delete-vote-btn">🗑 투표삭제</button>
@@ -71,8 +74,15 @@
 </template>
 
 <script>
+import { db } from "../firebase";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+
 export default {
   name: "Vote",
+
+  props:[
+    "currentTeam"
+  ],
 
   data() {
     return {
@@ -83,11 +93,12 @@ export default {
         { key: "time", label: "시간", icon: "⏰" }
       ],
 
-      // 투표 덩어리들 (1차 회의, 2차 회의 처럼 여러 개 가능)
-      votes: [this.createVote()]
+      votes: []
     };
   },
-
+  mounted(){
+    this.loadVotes();
+  },
   methods: {
     // 투표 덩어리 하나 생성 (제목 + 장소/날짜/시간 후보 각각 1개씩 포함)
     createVote() {
@@ -108,22 +119,25 @@ export default {
     },
 
     // "새 일정투표 추가" 버튼: votes 배열에 투표 덩어리 하나 추가
-    addVote() {
+    async addVote() {
       this.votes.push(this.createVote());
+      await this.saveVotes();
     },
 
     // 특정 투표 덩어리(vote)의 특정 카테고리(type)에 후보 하나 추가
-    addCandidate(vote, type) {
+    async addCandidate(vote, type) {
       vote[type].candidates.push(this.createCandidate(type));
+      await this.saveVotes();
     },
 
     // 투표 덩어리(장소+날짜+시간 통째로) 삭제
-    deleteVote(vIndex) {
+    async deleteVote(vIndex) {
       this.votes.splice(vIndex, 1);
+      await this.saveVotes();
     },
 
     // 투표하기 / 취소 (후보마다 따로 동작하니까 자동으로 복수투표 가능)
-    toggleVote(item) {
+    async toggleVote(item) {
       if (item.voted) {
         item.votes--;
         item.voted = false;
@@ -131,6 +145,8 @@ export default {
         item.votes++;
         item.voted = true;
       }
+
+      await this.saveVotes();
     },
 
     // 표 많은 순서대로 정렬한 결과 반환
@@ -151,7 +167,42 @@ export default {
       if (type === "place") return item.value || "(미입력)";
       if (type === "date") return item.date ? `${item.date} (${this.dayOfWeek(item.date)})` : "(미입력)";
       return `${item.period} ${item.hour ?? "?"}시 ${item.minute ?? "0"}분`;
-    }
+    },
+
+    async loadVotes(){
+      const ref = doc(
+        db,
+        "teams",
+        this.currentTeam,
+        "votes",
+        "data"
+      );
+
+      const snap = await getDoc(ref);
+
+      if(snap.exists()){
+        this.votes = snap.data().votes;
+      }else{
+        this.votes = [this.createVote()];
+        await this.saveVotes();
+      }
+    },
+    async saveVotes(){
+      const ref = doc(
+        db,
+        "teams",
+        this.currentTeam,
+        "votes",
+        "data"
+      );
+      await setDoc(ref,{
+        votes:this.votes
+      });
+    },
+    async endVote(vote){
+      vote.ended = true;
+      await this.saveVotes();
+    },
   }
 };
 </script>
