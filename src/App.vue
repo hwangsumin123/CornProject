@@ -23,6 +23,7 @@
 
 import Login from "./components/Login.vue"
 import Home from "./components/Home.vue"
+import { db } from "./firebase";
 
 export default {
 
@@ -111,7 +112,7 @@ methods:{
             id:Date.now(),
             text:data.text
         });
-    }
+    },
 
 }
 
