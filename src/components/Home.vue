@@ -40,8 +40,13 @@
 
 <div class="center">
 
-  <div v-if="selectedMenu === 'schedule'">
-    <h2>공유 달력</h2>
+<div v-if="selectedMenu === null">
+    <h2>📅 공유 달력</h2>
+    <Calendar :schedules="teams[currentTeam]?.schedule || []" />
+  </div>
+
+  <div v-else-if="selectedMenu === 'schedule'">
+    <h2>일정 등록</h2>
     <Schedule
     :schedules="teams[currentTeam]?.schedule || []"
     @add-schedule="addSchedule"
@@ -75,6 +80,7 @@ import Schedule from "./Schedule.vue"
 import Vote from "./Vote.vue"  
 import DM from "./DM.vue"
 import { db } from "../firebase";
+import Calendar from "./Calendar.vue"
 import { doc, updateDoc } from "firebase/firestore";
 
 export default {
@@ -83,7 +89,8 @@ components:{
     Sidebar,
     Schedule,
     Vote,
-    DM
+    DM,
+    Calendar
 },
     
 props:[
@@ -100,7 +107,7 @@ data(){
         showNotification:false,
         newNotification:"",
         showHistory:false,
-        selectedMenu:"schedule"
+        selectedMenu:null
     }
 
 },
