@@ -47,8 +47,7 @@
       </div>
 
       <!-- 장소/날짜/시간 다 합쳐서 투표종료 버튼 하나만 -->
-      <button @click="endVote(vote) = true" class="end-btn">🛑 투표종료</button>
-
+      <button @click="endVote(vote)" class="end-btn">🛑 투표종료</button>
       <!-- 이 투표 덩어리 자체를 통째로 삭제 -->
       <button @click="deleteVote(vIndex)" class="delete-vote-btn">🗑 투표삭제</button>
 

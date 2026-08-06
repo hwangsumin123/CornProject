@@ -2,8 +2,7 @@
 
 <div class="sidebar">
 
-    <button class="home-btn" @click="selectMenu(null)">🏠 </button>
-
+    <button class="home-btn" :class="{ active: selectedMenu === null }" @click="selectMenu(null)">🏠 </button>
     <h2>MENU</h2>
 
     <button
