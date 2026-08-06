@@ -12,11 +12,9 @@
     :currentTeam="currentTeam"
     :notifications="teams[currentTeam]?.notifications || []"
     :members="teams[currentTeam]?.members || []"
-    :messages="teams[currentTeam]?.messages || []"
     :teams="teams"
     @add-schedule="addSchedule"
     @delete-schedule="deleteSchedule"
-    @send-message="sendMessage"
     @logout="logout"
   />
 
@@ -59,8 +57,7 @@ methods:{
                 members:[data.nickname],
                 schedule:[],
                 notifications:[],
-                vote:[],
-                messages:{},
+                vote:[]
             };
 
             await setDoc(
@@ -144,7 +141,7 @@ methods:{
         // 2. 알림 생성
         this.teams[this.currentTeam].notifications.push({
             message: `${schedule.title} 일정이 등록되었습니다.`,
-            data: schedule.data,
+            date: schedule.date,
             time: schedule.time
         });
 
@@ -178,27 +175,6 @@ methods:{
         await updateDoc(teamRef,{
             schedule: team.schedule
         });
-    },
-
-async sendMessage(data){
-        const team=this.teams[this.currentTeam];
-
-        if(!team){
-            return;
-        }
-
-        if(!team.messages[data.receiver]){
-            team.messages[data.receiver]=[];
-        }
-
-        team.messages[data.receiver].push({
-            id:Date.now(),
-            text:data.text
-        });
-
-        const teamRef = doc(db, "teams", this.currentTeam);
-
-        await updateDoc(teamRef, {messages:team.messages});
     },
 
     logout(){
@@ -238,6 +214,5 @@ async mounted(){
 
 }
 }
-
 
 </script>

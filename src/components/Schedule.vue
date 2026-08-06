@@ -65,7 +65,8 @@ import ScheduleForm from "./ScheduleForm.vue"
 
 export default {
 emits:[
-    "add-schedule"
+    "add-schedule",
+    "delete-schedule"
 ],
 
 props:[

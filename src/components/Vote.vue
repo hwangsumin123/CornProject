@@ -19,21 +19,21 @@
         <div v-for="(item, idx) in vote[cat.key].candidates" :key="idx" class="candidate-row">
 
           <!-- 장소: 텍스트 입력 -->
-          <input v-if="cat.key === 'place'" v-model="item.value" type="text" placeholder="장소" class="text-input" />
+          <input v-if="cat.key === 'place'" v-model="item.value" @change="saveVotes" type="text" placeholder="장소" class="text-input" />
 
           <!-- 날짜: 달력 + 요일 자동 표시 -->
           <template v-else-if="cat.key === 'date'">
-            <input v-model="item.date" type="date" class="date-picker" />
+            <input v-model="item.date" @change="saveVotes" type="date" class="date-picker" />
            </template>
 
           <!-- 시간: 오전/오후 + 시 + 분 -->
           <template v-else>
-            <select v-model="item.period" class="date-input">
+            <select v-model="item.period" @change="saveVotes" class="date-input">
               <option value="오전">오전</option>
               <option value="오후">오후</option>
             </select>
-            <input v-model.number="item.hour" type="number" placeholder="시" class="date-input" />시
-            <input v-model.number="item.minute" type="number" placeholder="분" class="date-input" />분
+            <input v-model.number="item.hour" @change="saveVotes" type="number" placeholder="시" class="date-input" />시
+            <input v-model.number="item.minute" @change="saveVotes" type="number" placeholder="분" class="date-input" />분
           </template>
 
           <span class="vote-count">{{ item.votes }}표</span>
@@ -48,6 +48,7 @@
 
       <!-- 장소/날짜/시간 다 합쳐서 투표종료 버튼 하나만 -->
       <button @click="endVote(vote)" class="end-btn">🛑 투표종료</button>
+
       <!-- 이 투표 덩어리 자체를 통째로 삭제 -->
       <button @click="deleteVote(vIndex)" class="delete-vote-btn">🗑 투표삭제</button>
 

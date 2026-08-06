@@ -58,36 +58,93 @@
 </template>
 
 <script>
+import { db } from "../firebase";
+import { 
+  collection,
+  addDoc,
+  query,
+  orderBy,
+  onSnapshot
+} from "firebase/firestore";
 
 export default {
     props:[
         "members",
-        "messages"
+        "currentTeam",
+        "currentUser"
     ],
 
     data(){
         return{
             message:"",
-            selectedMember:null
+            selectedMember:null,
+            messages:{}
         }
     },
-
+    mounted(){
+        this.loadMessages();
+    },
     methods:{
-        sendMessage(){
-            if(!this.message){
-                return;
+        async sendMessage(){
+        if(!this.message || !this.selectedMember){
+            return;
+        }
+
+        await addDoc(
+            collection(
+                db,
+                "teams",
+                this.currentTeam,
+                "messages"
+            ),
+            {
+                sender:this.currentUser,
+                receiver:this.selectedMember,
+                text:this.message,
+                createdAt:new Date()
             }
-            this.$emit(
-                "send-message",
-                {
-                    receiver:this.selectedMember,
-                    text:this.message
-                }
-            );
-            this.message="";
+        );
+
+        this.message="";
         },
         selectMember(member){
             this.selectedMember=member;
+        },
+        loadMessages(){
+        const q = query(
+                collection(
+                    db,
+                    "teams",
+                    this.currentTeam,
+                    "messages"
+                ),
+                orderBy("createdAt")
+            );
+
+            onSnapshot(q,(snapshot)=>{
+                const data={};
+                snapshot.forEach(doc=>{
+
+                    const msg={
+                        id:doc.id,
+                        ...doc.data()
+                    };
+
+                    const partner =
+                        msg.sender === this.currentUser
+                        ? msg.receiver
+                        : msg.sender;
+
+
+                    if(!data[partner]){
+                        data[partner]=[];
+                    }
+
+                    data[partner].push(msg);
+                });
+
+                this.messages=data;
+            });
         }
     },
     watch:{
