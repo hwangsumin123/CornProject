@@ -17,6 +17,7 @@
     @add-schedule="addSchedule"
     @delete-schedule="deleteSchedule"
     @send-message="sendMessage"
+    @logout="logout"
   />
 
 </template>
@@ -179,7 +180,7 @@ methods:{
         });
     },
 
-    async sendMessage(data){
+async sendMessage(data){
         const team=this.teams[this.currentTeam];
 
         if(!team){
@@ -200,7 +201,19 @@ methods:{
         await updateDoc(teamRef, {messages:team.messages});
     },
 
+    logout(){
+        localStorage.removeItem("currentTeam");
+        localStorage.removeItem("nickname");
+
+        this.currentTeam = null;
+        this.nickname = "";
+        this.teams = {};
+
+        this.view = "login";
+    },
+
 },
+
 
 async mounted(){
     const savedTeam = localStorage.getItem("currentTeam");
@@ -220,11 +233,11 @@ async mounted(){
 
         this.nickname = savedNickname || "";
 
-        this.view = "main";
-    }
+        this.view = "main";}
+    
 
 }
-
 }
+
 
 </script>

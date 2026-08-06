@@ -11,6 +11,7 @@
         <div class="header">
 
           <span class="team-id-display">팀 ID : {{ currentTeam }}</span>
+          <button class="logout-btn" @click="$emit('logout')">나가기</button>
           
            <div class="notification-wrapper">
 
@@ -232,6 +233,14 @@ methods:{
 .notification-box p{
     margin:10px 0;
     color:#5a4800;
+}
+.logout-btn {
+  padding: 6px 14px;
+  border: none;
+  border-radius: 8px;
+  background-color: white;
+  cursor: pointer;
+  font-weight: bold;
 }
 
 </style>
