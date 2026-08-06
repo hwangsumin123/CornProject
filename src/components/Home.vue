@@ -62,8 +62,8 @@
   <div v-else-if="selectedMenu === 'dm'">
     <DM
     :members="members"
-    :messages="teams[currentTeam]?.messages || {}"
-    @send-message="sendMessage" />
+    :currentTeam="currentTeam" 
+    :currentUser="nickname"/>
   </div>
 
 </div>
@@ -96,6 +96,7 @@ components:{
     
 props:[
     "currentTeam",
+    "nickname",
     "members",
     "messages",
     "teams"

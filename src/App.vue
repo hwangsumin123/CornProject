@@ -10,6 +10,7 @@
   <Home 
     v-else
     :currentTeam="currentTeam"
+    :nickname="nickname"
     :notifications="teams[currentTeam]?.notifications || []"
     :members="teams[currentTeam]?.members || []"
     :teams="teams"
