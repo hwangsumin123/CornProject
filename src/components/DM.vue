@@ -35,7 +35,8 @@
             <div
             v-for="msg in currentMessages"
             :key="msg.id"
-            class="message my">
+            class="message"
+            :class="msg.sender === currentUser ? 'my' : 'other'">
                 {{msg.text}}
             </div>
         </div>
@@ -84,6 +85,11 @@ export default {
     mounted(){
         this.loadMessages();
     },
+    unmounted(){
+        if(this.unsubscribe){
+            this.unsubscribe();
+        }
+    },
     methods:{
         async sendMessage(){
         if(!this.message || !this.selectedMember){
@@ -111,35 +117,34 @@ export default {
             this.selectedMember=member;
         },
         loadMessages(){
-        const q = query(
-                collection(
-                    db,
-                    "teams",
-                    this.currentTeam,
-                    "messages"
-                ),
-                orderBy("createdAt")
-            );
+            const q = query(
+                    collection(
+                        db,
+                        "teams",
+                        this.currentTeam,
+                        "messages"
+                    ),
+                    orderBy("createdAt")
+                );
 
-            onSnapshot(q,(snapshot)=>{
+            this.unsubscribe = onSnapshot(q,(snapshot)=>{
                 const data={};
                 snapshot.forEach(doc=>{
+                    const msg={ id:doc.id, ...doc.data() };
 
-                    const msg={
-                        id:doc.id,
-                        ...doc.data()
-                    };
+                    if(
+                        msg.sender !== this.currentUser &&
+                        msg.receiver !== this.currentUser
+                    ){
+                        return;
+                    }
 
                     const partner =
                         msg.sender === this.currentUser
                         ? msg.receiver
                         : msg.sender;
 
-
-                    if(!data[partner]){
-                        data[partner]=[];
-                    }
-
+                    if(!data[partner]) data[partner]=[];
                     data[partner].push(msg);
                 });
 
@@ -147,6 +152,7 @@ export default {
             });
         }
     },
+
     watch:{
         currentMessages:{
             handler(){
@@ -238,6 +244,12 @@ export default {
     background:#fff4c2;
     color:#5a4800;
     border-bottom-right-radius:5px;
+}
+.other{
+    align-self:flex-start;
+    background:#f0f0f0;
+    color:#333;
+    border-bottom-left-radius:5px;
 }
 .input-area{
     height:75px;

@@ -34,7 +34,7 @@
             />
 
             <input
-            v-model="nicknameInput"
+            v-model="createNickname"
             placeholder="생성자 닉네임"
             />
 
@@ -61,7 +61,7 @@
             />
 
             <input
-            v-model="nicknameInput"
+            v-model="joinNickname"
             placeholder="닉네임"
             />
 
@@ -82,24 +82,15 @@
 export default {
 
 data(){
-
     return{
-
-        // 팀 이름 입력값
         createTeamName:"",
-
-        // 팀 ID 입력값
+        createNickname:"",
         joinTeamId:"",
-
-        // 닉네임 입력값
-        nicknameInput:""
-
+        joinNickname:""
     }
-
 },
 
 methods:{
-
     // 팀 생성
     createTeam(){
         if(!this.createTeamName){
@@ -107,7 +98,7 @@ methods:{
             return;
         }
 
-        if(!this.nicknameInput){
+        if(!this.createNickname){
             alert("닉네임을 입력해주세요.");
             return;
         }
@@ -115,10 +106,11 @@ methods:{
         this.$emit(
             "create-team",
             {teamName: this.createTeamName,
-            nickname: this.nicknameInput}
+            nickname: this.createNickname}
         );
 
         this.createTeamName="";
+        this.createNickname="";
     },
 
     // 팀 참여
@@ -129,21 +121,20 @@ methods:{
         }
 
 
-        if(!this.nicknameInput){
+        if(!this.joinNickname){
             alert("닉네임을 입력해주세요.");
             return;
         }
 
         this.$emit(
             "join-team",
-            {
-                id:this.joinTeamId,
-                nickname:this.nicknameInput
-            }
+            {id:this.joinTeamId,
+            nickname:this.joinNickname}
         );
 
+        this.joinTeamId="";
+        this.joinNickname="";
     }
-
 }
 
 }
