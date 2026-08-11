@@ -36,9 +36,10 @@
             <input v-model.number="item.minute" @change="saveVotes" type="number" placeholder="분" class="date-input" />분
           </template>
 
-          <span class="vote-count">{{ item.votes }}표</span>
-          <button @click="toggleVote(item)" class="vote-btn">
-            {{ item.voted ? "✅ 취소" : "투표하기" }}
+          <span class="vote-count">{{ item.voters.length }}표</span>
+          <!-- 트랜잭션으로 처리하기 위해 item 대신 위치(인덱스)를 넘김 -->
+          <button @click="toggleVote(vIndex, cat.key, idx)" class="vote-btn">
+            {{ item.voters.includes(myName) ? "✅ 취소" : "투표하기" }}
           </button>
 
         </div>
@@ -49,9 +50,6 @@
       <!-- 장소/날짜/시간 다 합쳐서 투표종료 버튼 하나만 -->
       <button @click="endVote(vote)" class="end-btn">🛑 투표종료</button>
 
-      <!-- 이 투표 덩어리 자체를 통째로 삭제 -->
-      <button @click="deleteVote(vIndex)" class="delete-vote-btn">🗑 투표삭제</button>
-
     </div>
 
     <!-- 투표 종료 후: 결과만, 표 많은 순서대로 -->
@@ -60,10 +58,13 @@
         <h4 class="section-label">{{ cat.icon }} {{ cat.label }} 결과</h4>
         <div v-for="(item, idx) in sortedResults(vote, cat.key)" :key="idx" class="result-row">
           <span>{{ formatLabel(cat.key, item) }}</span>
-          <span class="vote-count">{{ item.votes }}표</span>
+          <span class="vote-count">{{ item.voters.length }}표</span>
         </div>
       </div>
     </div>
+
+    <!-- 이 투표 덩어리 자체를 통째로 삭제 (진행중/종료 상관없이 항상 보임) -->
+    <button @click="deleteVote(vIndex)" class="delete-vote-btn">🗑 투표삭제</button>
 
   </div>
 
@@ -75,7 +76,7 @@
 
 <script>
 import { db } from "../firebase";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { doc, onSnapshot, setDoc, runTransaction } from "firebase/firestore";
 
 export default {
   name: "Vote",
@@ -93,13 +94,34 @@ export default {
         { key: "time", label: "시간", icon: "⏰" }
       ],
 
-      votes: []
+      votes: [],
+
+      // 지금 이 브라우저를 쓰는 사람 이름 (투표한 사람 구분용)
+      myName: "",
+
+      // Firestore 실시간 구독을 껐다 켰다 하기 위해 저장해둠
+      unsubscribe: null
     };
   },
   mounted(){
-    this.loadVotes();
+    this.loadMyName();
+    this.listenVotes();
+  },
+  beforeUnmount(){
+    // 화면을 벗어날 때 실시간 구독 정리
+    if (this.unsubscribe) this.unsubscribe();
   },
   methods: {
+    // localStorage에서 내 이름 불러오기, 없으면 입력받기
+    loadMyName(){
+      let name = localStorage.getItem("myName");
+      if (!name) {
+        name = window.prompt("이름을 입력해주세요 (팀원 구분용)") || "익명";
+        localStorage.setItem("myName", name);
+      }
+      this.myName = name;
+    },
+
     // 투표 덩어리 하나 생성 (제목 + 장소/날짜/시간 후보 각각 1개씩 포함)
     createVote() {
       return {
@@ -112,10 +134,11 @@ export default {
     },
 
     // 타입(장소/날짜/시간)에 맞는 빈 후보 객체 생성
+    // votes/voted 대신 voters(투표한 사람 이름 목록)로 관리
     createCandidate(type) {
-      if (type === "place") return { value: "", votes: 0, voted: false };
-      if (type === "date") return { date: "", votes: 0, voted: false };
-      return { period: "오전", hour: null, minute: null, votes: 0, voted: false };
+      if (type === "place") return { value: "", voters: [] };
+      if (type === "date") return { date: "", voters: [] };
+      return { period: "오전", hour: null, minute: null, voters: [] };
     },
 
     // "새 일정투표 추가" 버튼: votes 배열에 투표 덩어리 하나 추가
@@ -136,22 +159,37 @@ export default {
       await this.saveVotes();
     },
 
-    // 투표하기 / 취소 (후보마다 따로 동작하니까 자동으로 복수투표 가능)
-    async toggleVote(item) {
-      if (item.voted) {
-        item.votes--;
-        item.voted = false;
-      } else {
-        item.votes++;
-        item.voted = true;
-      }
+    // 투표하기 / 취소
+    // *** 핵심 수정 부분 ***
+    // 내 화면에 있던 낡은 데이터를 통째로 저장하는 게 아니라,
+    // 트랜잭션 안에서 Firestore의 "가장 최신 데이터"를 다시 읽어온 다음
+    // 그 위에 내 투표(voters)만 추가/삭제하고 다시 저장함
+    // -> 친구가 나보다 먼저 투표해놨어도 그 표가 사라지지 않음
+    async toggleVote(vIndex, catKey, idx) {
+      const ref = doc(db, "teams", this.currentTeam, "votes", "data");
 
-      await this.saveVotes();
+      await runTransaction(db, async (transaction) => {
+        const snap = await transaction.get(ref);
+        if (!snap.exists()) return;
+
+        const latestVotes = snap.data().votes;
+        const candidate = latestVotes[vIndex][catKey].candidates[idx];
+
+        const i = candidate.voters.indexOf(this.myName);
+        if (i === -1) {
+          candidate.voters.push(this.myName);
+        } else {
+          candidate.voters.splice(i, 1);
+        }
+
+        transaction.set(ref, { votes: latestVotes });
+      });
+      // 화면 갱신은 listenVotes()의 실시간 구독이 자동으로 해줌
     },
 
     // 표 많은 순서대로 정렬한 결과 반환
     sortedResults(vote, type) {
-      return [...vote[type].candidates].sort((a, b) => b.votes - a.votes);
+      return [...vote[type].candidates].sort((a, b) => b.voters.length - a.voters.length);
     },
 
     // 날짜 문자열로 요일 계산
@@ -169,7 +207,10 @@ export default {
       return `${item.period} ${item.hour ?? "?"}시 ${item.minute ?? "0"}분`;
     },
 
-    async loadVotes(){
+    // *** 추가된 부분 ***
+    // 한 번만 불러오는 getDoc 대신, 실시간으로 계속 지켜보는 onSnapshot 사용
+    // -> 친구가 투표하면 내 화면도 자동으로 바로 업데이트됨
+    listenVotes(){
       const ref = doc(
         db,
         "teams",
@@ -178,15 +219,16 @@ export default {
         "data"
       );
 
-      const snap = await getDoc(ref);
-
-      if(snap.exists()){
-        this.votes = snap.data().votes;
-      }else{
-        this.votes = [this.createVote()];
-        await this.saveVotes();
-      }
+      this.unsubscribe = onSnapshot(ref, (snap) => {
+        if (snap.exists()) {
+          this.votes = snap.data().votes;
+        } else {
+          this.votes = [this.createVote()];
+          this.saveVotes();
+        }
+      });
     },
+
     async saveVotes(){
       const ref = doc(
         db,
