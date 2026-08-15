@@ -42,12 +42,10 @@
 <div class="center">
 
 <div v-if="selectedMenu === null">
-    <h2>📅 공유 달력</h2>
     <Calendar :schedules="teams[currentTeam]?.schedule || []" />
   </div>
 
   <div v-else-if="selectedMenu === 'schedule'">
-    <h2>일정 등록</h2>
     <Schedule
     :schedules="teams[currentTeam]?.schedule || []"
     @add-schedule="addSchedule"
@@ -152,27 +150,15 @@ methods:{
 
 .main-container {
   margin-left: 200px;
-}
-
-.sidebar {
-  width: 200px;
-  background-color: #fffbe6;
-  padding: 20px;
+  min-height: 100vh;
   display: flex;
-  flex-direction: column;
-  gap: 15px;
-  border-right: 1px solid #ddd;
-}
-
-.sidebar button {
-  padding: 10px;
-  cursor: pointer;
 }
 
 .right-area {
   flex-grow: 1; 
   display: flex;
   flex-direction: column;
+  min-height: 100vh;
 }
 
 .header {
@@ -180,9 +166,9 @@ methods:{
   justify-content: flex-end;
   align-items: center;
   padding: 15px 30px;
-  background-color: #a1d69f;
+  background-color: #75b968;
   gap: 20px;
-  border-bottom: 1px solid #ddd;
+  border-bottom: none;
 }
 
 /*알림버튼 - 버튼 테두리/배경 없애고 종 아이콘만 보이게*/
@@ -198,24 +184,27 @@ methods:{
 /*알림창 기준점*/
 .notification-wrapper {
   position: relative;
+  z-index: 1000;
 }
 
-/*알림창 박스*/
-.notification-box {
-  position: absolute;
-  top: 40px;
-  right: 0;
-  width: 250px;
-  background-color: white;
-  border: 1px solid #ccc;
-  padding: 15px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+.notification-box{
+    position:absolute;
+    top:45px;
+    right:0;
+    width:250px;
+    background:white;
+    border-radius:15px;
+    padding:15px;
+    box-shadow:
+    0 5px 15px rgba(0,0,0,0.15);
+    z-index:1000;
 }
 
 .center {
-  padding: 40px;
+  padding: 15px 40px 15px 60px;
   text-align: center;
   flex-grow: 1;
+  min-height: 0;
 }
 
 .notification-box{

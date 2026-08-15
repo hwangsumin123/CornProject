@@ -2,7 +2,7 @@
 
 <div class="schedule-card">
 
-    <h2>📅 일정 조율</h2>
+    <h2>일정 등록</h2>
 
     <div class="form-item">
 
@@ -133,7 +133,7 @@ methods:{
 .schedule-card{
     width:450px;
     padding:35px;
-    background:#FFF2A8;
+    background:#FDE2EA;
     border-radius:20px;
     box-shadow:
     0 8px 20px rgba(0,0,0,0.15);
@@ -142,7 +142,7 @@ methods:{
 
 h2{
     text-align:center;
-    color:#5a4800;
+    color:#9c3b5e;
     margin-bottom:30px;
 }
 
@@ -155,7 +155,7 @@ h2{
 label{
     font-weight:bold;
     margin-bottom:8px;
-    color:#665200;
+    color:#a8506f;
 }
 
 input{
@@ -168,7 +168,7 @@ input{
 }
 
 input:focus{
-    outline:2px solid #F4C430;
+    outline:2px solid #F48FB1;
 }
 
 button{
@@ -177,7 +177,7 @@ button{
     margin-top:10px;
     border:none;
     border-radius:12px;
-    background:#F4B400;
+    background:#F48FB1;
     color:white;
     font-size:16px;
     font-weight:bold;
@@ -185,6 +185,6 @@ button{
 }
 
 button:hover{
-    background:#D99C00;
+    background:#EC7CA1;
 }
 </style>

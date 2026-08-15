@@ -1,58 +1,57 @@
 <template>
 
-<div>
+<div class="schedule-layout">
 
-<!--ScheduleForm에서 add-schedule 보내면
-Schedule.vue의 addSchedule 함수 실행-->
-<ScheduleForm 
-@add-schedule="addSchedule"
-/>
+    <!-- 왼쪽: 일정 조율 카드 -->
+    <div class="form-side">
+        <ScheduleForm 
+        @add-schedule="addSchedule"
+        />
+    </div>
 
-<!-- 등록된 일정 표시 -->
-    <!-- 등록된 일정 목록 -->
+    <!-- 오른쪽: 등록된 일정 목록 -->
+    <div class="list-side">
 
-<div class="schedule-list">
+        <div class="schedule-list">
     
-    <div
-    class="schedule-item"
-    v-for="schedule in schedules"
-    :key="schedule.id"
-    >
+            <div
+            class="schedule-item"
+            v-for="schedule in schedules"
+            :key="schedule.id"
+            >
+
+             <button 
+        class="delete-btn"
+        @click="deleteSchedule(schedule.id)"
+        >
+        ×
+        </button>
 
         <h3>
             📌 {{schedule.title}}
         </h3>
 
-
         <div class="schedule-info">
 
-            <p>
+            <span class="info-chip">
                 📆 {{schedule.date}}
-            </p>
+            </span>
 
-
-            <p>
+            <span class="info-chip">
                 ⏰ {{schedule.time}}
-            </p>
+            </span>
 
-
-            <p>
+            <span class="info-chip">
                 📍 {{schedule.place || "장소 미지정"}}
-            </p>
+            </span>
 
-            <button 
-            class="delete-btn"
-            @click="deleteSchedule(schedule.id)"
-            >
-            ×
-            </button>
+        </div>   
+
+            </div>
 
         </div>
 
     </div>
-
-</div>
-
 
 </div>
 
@@ -111,55 +110,91 @@ components:{
 
 <style scoped>
 
+.schedule-layout{
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    gap:40px;
+    padding:20px;
+}
+
+.form-side{
+    flex-shrink:0;
+}
+
+.list-side{
+    flex-grow:1;
+    max-width:600px;
+}
+
 .schedule-list{
-    margin-top:40px;
     display:flex;
     flex-direction:column;
     gap:20px;
-    align-items:center;
+    align-items:stretch;
+    max-height:70vh;
+    overflow-y:auto;
+    padding-right:8px;
 }
 
 .schedule-item {
-    width:450px;
+    width:100%;
+    box-sizing:border-box;
     background:white;
-    padding:25px;
+    padding:20px 24px;
     border-radius:14px;
-    border:1px solid #eee;
+    border:1px solid #f0f0f0;
+    border-left:5px solid #F48FB1;
     box-shadow:
-    0 3px 10px rgba(0,0,0,0.08);
+    0 3px 10px rgba(0,0,0,0.06);
     position:relative;
     transition:0.2s;
 }
 
 .schedule-item:hover {
-    transform:translateY(-3px);
+    transform:translateY(-2px);
     box-shadow:
-    0 6px 15px rgba(0,0,0,0.12);
+    0 6px 15px rgba(0,0,0,0.1);
 }
 
 .schedule-item h3 {
-    margin:0 0 20px;
-    color:#5a4800;
-    font-size:20px;
+    margin:0 0 12px;
+    padding-right:30px;
+    color:#333;
+    font-size:18px;
+    word-break:break-word;
 }
 
-.schedule-info p {
-    margin:8px 0;
-    color:#555;
-    font-size:15px;
+.schedule-info {
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:space-between;
+    gap:8px;
+}
+
+.info-chip {
+    display:inline-block;
+    background:#FDE2EA;
+    color:#9c3b5e;
+    font-size:13px;
+    font-weight:600;
+    padding:5px 12px;
+    border-radius:20px;
+    white-space:nowrap;
 }
 
 .delete-btn {
     position:absolute;
-    top:15px;
-    right:15px;
-    width:28px;
-    height:28px;
+    top:14px;
+    right:14px;
+    width:24px;
+    height:24px;
     border-radius:50%;
     border:none;
     background:#f5f5f5;
-    color:#777;
-    font-size:18px;
+    color:#999;
+    font-size:15px;
+    line-height:1;
     cursor:pointer;
 }
 

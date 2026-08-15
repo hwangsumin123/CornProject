@@ -57,20 +57,20 @@ methods:{
 
 </script>
 
-
 <style scoped>
 
 .sidebar {
 
     width:200px;
-    background-color:#fffbe6;
+    background-color:#7cc576;
     padding:20px;
 
     display:flex;
     flex-direction:column;
-    gap:15px;
+    gap:12px;
 
-    border-right:3px solid #ffd93d;
+    border-right:none;
+    box-shadow:2px 0 8px rgba(0,0,0,0.08);
 
     position: fixed;
     top: 0;
@@ -82,75 +82,87 @@ methods:{
 
 .sidebar h2 {
 
-    margin:0 0 10px 0;
-    font-size:18px;
-    color:#2e7d32;
-    letter-spacing:1px;
+    margin:0 0 15px 0;
+    font-size:16px;
+    font-weight:800;
+    color:#ffffff;
+    letter-spacing:3px;
     text-align:center;
+    text-shadow:0 1px 2px rgba(0,0,0,0.15);
 
 }
 
 .sidebar button {
 
-    padding:10px;
+    padding:12px;
     cursor:pointer;
     text-align:center;
 
-    border:2px solid #ffd93d;
-    border-radius:8px;
-    background-color:#ffe066;
-    box-shadow:0 1px 3px rgba(0,0,0,0.1);
+    border:none;
+    border-radius:10px;
+    background-color:#ffffff;
+    box-shadow:0 2px 5px rgba(0,0,0,0.15);
 
     font-size:14px;
-    font-weight:500;
-    color:#4a3b00;
+    font-weight:700;
+    color:#2e7d32;
 
     transform:scale(1);
     transform-origin:center;
 
-    transition:transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+    transition:transform 0.15s ease, background-color 0.2s ease, box-shadow 0.2s ease;
 
 }
 
 /* 마우스 올렸을 때 */
 .sidebar button:hover {
 
-    background-color:#ffd93d;
-    transform:scale(1.08)
+    background-color:#e8f5e9;
+    transform:scale(1.06)
 
 }
 
-/* 버튼 눌러서 선택된 상태 -> 버튼 자체가 커지고 초록색으로 강조 */
+/* 버튼 눌러서 선택된 상태 -> 버튼 자체가 강조 */
 .sidebar button.active {
 
-    background-color:#4caf50;
-    color:#ffffff;
-    border-color:#2e7d32;
+    background-color:#fff3c4;
+    color:#7a5c00;
 
-    transform:scale(1.15);
+    transform:scale(1.1);
 
-    box-shadow:0 4px 10px rgba(76,175,80,0.4);
+    box-shadow:0 4px 14px rgba(0,0,0,0.2);
 
 }
 /*홈버튼스타일*/
 .sidebar .home-btn {
 
     border:none;
-    background:none;
+    background-color:#ffffff;
+    border-radius:10px;
     cursor:pointer;
 
+    width:64px;
+    padding:12px 0;
     font-size:26px;
     line-height:1;
 
     align-self:center;
-    margin-bottom:10px;
+    margin-bottom:5px;
 
     transform:scale(1);
-    transition:transform 0.2s ease;
+    transition:transform 0.2s ease, background-color 0.2s ease;
 
 }
 
 .sidebar .home-btn:hover {
-    transform:scale(1.3);
+    background-color:#e8f5e9;
+    transform:scale(1.1);
 }
+
+.sidebar .home-btn.active {
+    background-color:#fff3c4;
+    box-shadow:none;
+    transform:scale(1.1);
+}
+
 </style>
